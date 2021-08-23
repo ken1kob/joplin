@@ -20,6 +20,7 @@ import Logger from '@joplin/lib/Logger';
 import { FolderEntity } from '@joplin/lib/services/database/types';
 import stateToWhenClauseContext from '../../services/commands/stateToWhenClauseContext';
 import { store } from '@joplin/lib/reducer';
+import { hasOwnSortOrder } from '../MainScreen/commands/perNotebookSortOrder';
 const { connect } = require('react-redux');
 const shared = require('@joplin/lib/components/shared/side-menu-shared.js');
 const { themeStyle } = require('@joplin/lib/theme');
@@ -67,10 +68,10 @@ function ExpandIcon(props: any) {
 function ExpandLink(props: any) {
 	return props.hasChildren ? (
 		<StyledExpandLink href="#" data-folder-id={props.folderId} onClick={props.onClick}>
-			<ExpandIcon themeId={props.themeId} isVisible={true} isExpanded={props.isExpanded}/>
+			<ExpandIcon themeId={props.themeId} isVisible={true} isExpanded={props.isExpanded} />
 		</StyledExpandLink>
 	) : (
-		<StyledExpandLink><ExpandIcon themeId={props.themeId} isVisible={false} isExpanded={false}/></StyledExpandLink>
+		<StyledExpandLink><ExpandIcon themeId={props.themeId} isVisible={false} isExpanded={false} /></StyledExpandLink>
 	);
 }
 
@@ -83,7 +84,7 @@ function FolderItem(props: any) {
 
 	return (
 		<StyledListItem depth={depth} selected={selected} className={`list-item-container list-item-depth-${depth} ${selected ? 'selected' : ''}`} onDragStart={onFolderDragStart_} onDragOver={onFolderDragOver_} onDrop={onFolderDrop_} draggable={true} data-folder-id={folderId}>
-			<ExpandLink themeId={props.themeId} hasChildren={hasChildren} folderId={folderId} onClick={onFolderToggleClick_} isExpanded={isExpanded}/>
+			<ExpandLink themeId={props.themeId} hasChildren={hasChildren} folderId={folderId} onClick={onFolderToggleClick_} isExpanded={isExpanded} />
 			<StyledListItemAnchor
 				ref={anchorRef}
 				className="list-item"
@@ -324,6 +325,13 @@ class SidebarComponent extends React.Component<Props, State> {
 					submenu: exportMenu,
 				})
 			);
+			if (Setting.value('notes.perNotebookSortOrderEnabled')) {
+				menu.append(new MenuItem({
+					...menuUtils.commandToStatefulMenuItem('perNotebookSortOrder', itemId),
+					type: 'checkbox',
+					checked: hasOwnSortOrder(itemId),
+				}));
+			}
 		}
 
 		if (itemType === BaseModel.TYPE_TAG) {
@@ -397,7 +405,7 @@ class SidebarComponent extends React.Component<Props, State> {
 		return (
 			<StyledListItem key="allNotesHeader" selected={selected} className={'list-item-container list-item-depth-0 all-notes'} isSpecialItem={true}>
 				<StyledExpandLink>{this.renderExpandIcon(false, false)}</StyledExpandLink>
-				<StyledAllNotesIcon className="icon-notes"/>
+				<StyledAllNotesIcon className="icon-notes" />
 				<StyledListItemAnchor
 					className="list-item"
 					isSpecialItem={true}
@@ -505,10 +513,10 @@ class SidebarComponent extends React.Component<Props, State> {
 						this.onHeaderClick_(key);
 					}}
 				>
-					<StyledHeaderIcon className={iconName}/>
+					<StyledHeaderIcon className={iconName} />
 					<StyledHeaderLabel>{label}</StyledHeaderLabel>
 				</StyledHeader>
-				{ onPlusButtonClick && <StyledAddButton onClick={onPlusButtonClick} iconName="fas fa-plus" level={ButtonLevel.SidebarSecondary}/> }
+				{onPlusButtonClick && <StyledAddButton onClick={onPlusButtonClick} iconName="fas fa-plus" level={ButtonLevel.SidebarSecondary} />}
 			</div>
 		);
 	}
