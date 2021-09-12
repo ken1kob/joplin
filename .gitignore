@@ -1765,6 +1765,9 @@ packages/renderer/MdToHtml/rules/mermaid.js.map
 packages/renderer/MdToHtml/rules/sanitize_html.d.ts
 packages/renderer/MdToHtml/rules/sanitize_html.js
 packages/renderer/MdToHtml/rules/sanitize_html.js.map
+packages/renderer/MdToHtml/rules/source_map.d.ts
+packages/renderer/MdToHtml/rules/source_map.js
+packages/renderer/MdToHtml/rules/source_map.js.map
 packages/renderer/MdToHtml/setupLinkify.d.ts
 packages/renderer/MdToHtml/setupLinkify.js
 packages/renderer/MdToHtml/setupLinkify.js.map

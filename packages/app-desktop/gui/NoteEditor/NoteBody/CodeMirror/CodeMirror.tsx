@@ -63,7 +63,9 @@ function CodeMirror(props: NoteBodyEditorProps, ref: any) {
 
 	usePluginServiceRegistration(ref);
 
-	const { resetScroll, editor_scroll, setEditorPercentScroll, setViewerPercentScroll } = useScrollHandler(editorRef, webviewRef, props.onScroll);
+	const { resetScroll, editor_scroll, setEditorPercentScroll, setViewerPercentScroll,
+		translateScrollPercentFromViewerToEditor, translateScrollPercentFromEditorToViewer,
+	} = useScrollHandler(editorRef, webviewRef, props.onScroll);
 
 	const codeMirror_change = useCallback((newBody: string) => {
 		props_onChangeRef.current({ changeId: null, content: newBody });
@@ -113,9 +115,10 @@ function CodeMirror(props: NoteBodyEditorProps, ref: any) {
 					if (!webviewRef.current) return;
 					webviewRef.current.wrappedInstance.send('scrollToHash', options.value as string);
 				} else if (options.type === ScrollOptionTypes.Percent) {
-					const p = options.value as number;
-					setEditorPercentScroll(p);
-					setViewerPercentScroll(p);
+					const editorPercent = options.value as number;
+					setEditorPercentScroll(editorPercent);
+					const viewerPercent = translateScrollPercentFromEditorToViewer(editorPercent);
+					setViewerPercentScroll(viewerPercent);
 				} else {
 					throw new Error(`Unsupported scroll options: ${options.type}`);
 				}
@@ -576,7 +579,9 @@ function CodeMirror(props: NoteBodyEditorProps, ref: any) {
 				editorRef.current.updateBody(newBody);
 			}
 		} else if (msg === 'percentScroll') {
-			setEditorPercentScroll(arg0);
+			const viewerPercent = arg0;
+			const editorPercent = translateScrollPercentFromViewerToEditor(viewerPercent);
+			setEditorPercentScroll(editorPercent);
 		} else {
 			props.onMessage(event);
 		}

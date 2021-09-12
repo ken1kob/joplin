@@ -128,10 +128,12 @@ class NoteTextViewerComponent extends React.Component<Props, any> {
 	}
 
 	componentDidMount() {
+		this.invalidateScrollPercentMapCache();
 		this.tryInit();
 	}
 
 	componentDidUpdate() {
+		this.invalidateScrollPercentMapCache();
 		this.tryInit();
 	}
 
@@ -161,6 +163,58 @@ class NoteTextViewerComponent extends React.Component<Props, any> {
 		if (channel === 'setMarkers') {
 			win.postMessage({ target: 'webview', name: 'setMarkers', data: { keywords: arg0, options: arg1 } }, '*');
 		}
+	}
+
+	private scrollPercentMap_: { line: number, percent: number }[] = null;
+
+	invalidateScrollPercentMapCache() {
+		this.scrollPercentMap_ = null;
+	}
+
+	scrollPercentMap() {
+		// Returns a cached translation map between editor's scroll percenet 
+		// and viewer's scroll percent. Both attributes (line and percent) of 
+		// the returned map are sorted respectively.
+		// Since creating this map is costly for each scroll event, it is cached.
+		// When some update events which outdate it such as switching a note or 
+		// editing a note, it has to be invalidated (using invalidateScrollPercentMapCache()), 
+		// and a new map will be created at a next scroll event.
+		if (this.scrollPercentMap_) return this.scrollPercentMap_;
+		const doc: Document = this.webviewRef_.current?.contentWindow?.document;
+		if (!doc) return null;
+		//console.log('NoteTextViewer.scrollPercentMap(): NEW MAP');
+		const contentElement = doc.getElementById('joplin-container-content');
+		// Since getBoundingClientRect() returns a relative position,
+		// the offset of the origin is needed to get its aboslute position.
+		const offset = doc.getElementById('rendered-md').getBoundingClientRect().top;
+		const height = Math.max(1, contentElement.scrollHeight - contentElement.clientHeight);
+		const elems = doc.getElementsByClassName('maps-to-line');
+		let last = { line: 0, percent: 0 };
+		const map = [last];
+		for (let i = 0; i < elems.length; i++) {
+			const top = elems[i].getBoundingClientRect().top - offset;
+			const line = Number(elems[i].getAttribute('source-line'));
+			const percent = Math.max(0, Math.min(1, top / height));
+			if (last.line <= line && last.percent <= percent) {
+				if (last.line === line) {
+					if (last.percent === percent) continue;
+					if (map[map.length - 2]?.line === line) {
+						last.percent = percent;
+						continue;
+					}
+				} else if (last.percent === percent) {
+					if (map[map.length - 2]?.percent === percent) {
+						last.line = line;
+						continue;
+					}
+				}
+				last = { line, percent };
+				map.push(last);
+			}
+		}
+		map.push({ line: 1e10, percent: 1 });
+		this.scrollPercentMap_ = map;
+		return map;
 	}
 
 	// ----------------------------------------------------------------
