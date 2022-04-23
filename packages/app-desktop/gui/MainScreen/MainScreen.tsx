@@ -8,7 +8,7 @@ import NoteEditor from '../NoteEditor/NoteEditor';
 import NoteContentPropertiesDialog from '../NoteContentPropertiesDialog';
 import ShareNoteDialog from '../ShareNoteDialog';
 import CommandService from '@joplin/lib/services/CommandService';
-import { PluginHtmlContents, PluginStates, utils as pluginUtils } from '@joplin/lib/services/plugins/reducer';
+import { PluginStates, utils as pluginUtils } from '@joplin/lib/services/plugins/reducer';
 import Sidebar from '../Sidebar/Sidebar';
 import UserWebview from '../../services/plugins/UserWebview';
 import UserWebviewDialog from '../../services/plugins/UserWebviewDialog';
@@ -54,7 +54,6 @@ interface LayerModalState {
 
 interface Props {
 	plugins: PluginStates;
-	pluginHtmlContents: PluginHtmlContents;
 	pluginsLoaded: boolean;
 	hasNotesBeingSaved: boolean;
 	dispatch: Function;
@@ -727,13 +726,11 @@ class MainScreenComponent extends React.Component<Props, State> {
 				}
 			} else {
 				const { view, plugin } = viewInfo;
-				const html = this.props.pluginHtmlContents[plugin.id]?.[view.id] ?? '';
 
 				return <UserWebview
 					key={view.id}
 					viewId={view.id}
 					themeId={this.props.themeId}
-					html={html}
 					scripts={view.scripts}
 					pluginId={plugin.id}
 					borderBottom={true}
@@ -767,13 +764,11 @@ class MainScreenComponent extends React.Component<Props, State> {
 			const { plugin, view } = info;
 			if (view.containerType !== ContainerType.Dialog) continue;
 			if (!view.opened) continue;
-			const html = this.props.pluginHtmlContents[plugin.id]?.[view.id] ?? '';
 
 			output.push(<UserWebviewDialog
 				key={view.id}
 				viewId={view.id}
 				themeId={this.props.themeId}
-				html={html}
 				scripts={view.scripts}
 				pluginId={plugin.id}
 				buttons={view.buttons}
@@ -867,7 +862,6 @@ const mapStateToProps = (state: AppState) => {
 		shouldUpgradeSyncTarget: state.settings['sync.upgradeState'] === Setting.SYNC_UPGRADE_STATE_SHOULD_DO,
 		pluginsLegacy: state.pluginsLegacy,
 		plugins: state.pluginService.plugins,
-		pluginHtmlContents: state.pluginService.pluginHtmlContents,
 		customCss: state.customCss,
 		editorNoteStatuses: state.editorNoteStatuses,
 		hasNotesBeingSaved: stateUtils.hasNotesBeingSaved(state),
