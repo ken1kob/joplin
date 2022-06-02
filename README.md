@@ -16,3 +16,8 @@ Joplin's original README is [here](./README.orig.md).
 
 #### Applied PRs
 - #5271, #6383, #6409, #6430, #6437, #6443, #6444, #6446, #6451, #6464, #6469, #6470, #6471
+
+#### All versions with quick-slim-note
+
+- [Joplin 2.8.8+quick-slim-note](https://github.com/ken1kob/joplin/tree/quick-slim-note-2.8.8) (pre-release)
+- [Joplin 2.7.15+quick-slim-note](https://github.com/ken1kob/joplin/tree/quick-slim-note-2.7.15) (stable)
