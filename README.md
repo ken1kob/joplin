@@ -14,7 +14,7 @@ Joplin's original README is [here](./README.orig.md).
 - 2.8.8 (stable)
 
 #### Applied PRs
-- #6430, #6437, #6443, #6444, #6446, #6451, #6464, #6469, #6470, #6471, #6542
+- #6430, #6437, #6443, #6444, #6446, #6451, #6464, #6469, #6470, #6471, #6542, #6640
 
 #### All versions with quick-slim-note
 
